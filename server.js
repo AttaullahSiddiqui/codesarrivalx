@@ -42,6 +42,7 @@ mongoose.connection.on('connected', () => {
 
 // Send all other requests to the Angular app
 app.get('*', (req, res) => {
+    res.set('Cache-Control', 'max-age=5');
     res.sendFile(path.join(__dirname, 'dist/index.html'));
 });
 
