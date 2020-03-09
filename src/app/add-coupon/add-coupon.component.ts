@@ -10,7 +10,6 @@ export class AddCouponComponent implements OnInit {
   stores: any = {};
   couponInfo: any = { activeStatus: true };
   isBusy = false;
-  tempVar = "";
   responseSuccess = "";
   responseError = "";
 
@@ -25,6 +24,7 @@ export class AddCouponComponent implements OnInit {
     })
   }
   addCoupon(couponData) {
+    var dateBackup = couponData.expDate;
     if (this.isBusy) return;
     this.isBusy = true;
     couponData.expDate = new Date(couponData.expDate).getTime();
@@ -37,15 +37,18 @@ export class AddCouponComponent implements OnInit {
     if (!couponData.featuredForHome) couponData.featuredForHome = false;
     if (!couponData.newArrival) couponData.newArrival = false;
     if (couponData.activeStatus) couponData.code = "";
-    this.tempVar = couponData.activeStatus;
 
     this._dataService.postAPI("/api/addCoupon", couponData).subscribe(res => {
       if (res.data) {
         this.responseSuccess = res.message;
         this.responseError = "";
-        this.couponInfo = { activeStatus: this.tempVar };
+        this.couponInfo['featuredForHome'] = false;
+        this.couponInfo['trending'] = false;
+        this.couponInfo['newArrival'] = false;
+        this.couponInfo['code'] = "";
+        this.couponInfo['expDate'] = dateBackup;
         window.scrollTo(0, 0);
-        this.isBusy = false
+        this.isBusy = false;
       } else this.errorHandler(res.message)
     })
   }
